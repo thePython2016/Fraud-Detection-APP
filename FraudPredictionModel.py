@@ -34,14 +34,26 @@ with tab1:
 with tab2:
     
     fileUpload=st.file_uploader("Upload File",type="csv")
-    fileButtton=st.button("Click to Predict")
-    if fileButtton:
-        if fileUpload:
-            file=pd.read_csv(fileUpload)
-            TransformFile=Transformer.transform(file)
-            withEncodedFeatures=pd.DataFrame(TransformFile,columns=Transformer.get_feature_names_out())
-            predictFile=model.predict(withEncodedFeatures)
-            file['Prediction']=predictFile
+    fileButton=st.button("Click to Predict")
+    if fileButton:
+        if fileUpload is not None:
+        # Loading  data
+            file = pd.read_csv(fileUpload)
+            
+            # Transaformation & Prediction
+            TransformFile = Transformer.transform(file)
+            withEncodedFeatures = pd.DataFrame(
+                TransformFile, 
+                columns=Transformer.get_feature_names_out()
+            )
+            predictFile = model.predict(withEncodedFeatures)
+            
+        #   decoding 
+            file['Prediction'] = ["Fraud" if x == 1 else "Not Fraud" for x in predictFile]
+            
+            
+            st.success("Analysis Complete")
             st.write(file)
+        
         else:
-            st.error("Upload File")
+            st.error("Please upload a file first!")
